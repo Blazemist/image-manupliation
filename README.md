@@ -5,4 +5,4 @@ this code uses a python external module called Pillow for image processing
 install it by - pip install pillow
 
 note: sometimes python recoginise it as pillow itself in code instead of PIL and so if module not found error arise
-try pip installing and also changing line 2
+try pip installing and also changing line 1 to 'from pillow import Image,ImageTk'
