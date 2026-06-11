@@ -13,7 +13,8 @@ def select_photo():
             ('JPG/JPEG Files', '*.jpg *.jpeg'),
             ("IMAGE Files", '*.png *.jpg *.jpeg'),
             ("ALL FIles", "*.*")
-            ])
+            ]
+    )
     if not file:
         return
     image_path = file.name
@@ -52,22 +53,27 @@ def red_dim():
 
 def photo_resize():
     w,h = Images['img'].size
-    new_w = int(Entries['width'].get())
-    new_h = int(Entries['height'].get())
-    if w < new_w or h < new_h:
+    try:
+        new_w = int(Entries['width'].get())
+        new_h = int(Entries['height'].get())
+        if new_h > h or new_w > w:
+            raise ValueError
+    except ValueError:
         Messageboxs['invalid_dim'] = messagebox.showerror(
-            title='Invalid Dimenstion',message='height and width\nmust be less\nthan images')
-    else:
-        Entries['height'].destroy()
-        Entries['width'].destroy()
-        Labels['height'].destroy()
-        Labels['width'].destroy()
-        Buttons['dim_confirm'].destroy()
-        path = image_path[:image_path.rfind('.')]+'_resized'+image_path[image_path.rfind('.'):]
-        Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
-        Images['resize_img'] = Images['img'].resize((new_w,new_h))
-        Images['resize_img'].save(path)
-        Labels['confirmation'].place(x=0,y=400)
+            title='Invalid Dimenstion',
+            message='height and width\nmust be integer and less\nthan images'
+            )
+        return
+    Entries['height'].destroy()
+    Entries['width'].destroy()
+    Labels['height'].destroy()
+    Labels['width'].destroy()
+    Buttons['dim_confirm'].destroy()
+    path = image_path[:image_path.rfind('.')]+'_resized'+image_path[image_path.rfind('.'):]
+    Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
+    Images['resize_img'] = Images['img'].resize((new_w,new_h))
+    Images['resize_img'].save(path)
+    Labels['confirmation'].place(x=0,y=400)
 
 def red_kb():
     Buttons['dim'].destroy()
@@ -81,34 +87,36 @@ def red_kb():
 
 def photo_reduc():
     buffer = io.BytesIO()
-    Images['img'].save(buffer,format=image_path[image_path.rfind('.'):])
+    Images['img'].save(buffer,format=image_path[image_path.rfind('.')+1:])
     current = buffer.tell()/1024
-    target = int(Entries['kb'].get())*0.8
-    w,h = Images['img'].size
-    counter = 1
-    if current<target:
+    try:
+        target = int(Entries['kb'].get())*0.8
+        if current<target:
+            raise ValueError
+    except ValueError:
         Messageboxs['invalid_size'] = messagebox.showerror(
             title='Invalid Size',
             message='Size can only be reduced'
             )
-    else:
-        Entries['kb'].destroy()
-        Labels['kb'].destroy()
-        Buttons['kb_confirm'].destroy()
-        while current >= target and counter <= 100:
-            buffer.truncate(0)
-            buffer.seek(0)
-            ratio = (target/current)**0.5
-            w = int(w*ratio)
-            h = int(h*ratio)
-            Images['img']= Images['img'].resize((w,h))
-            Images['img'].save(buffer,format='PNG')
-            current = buffer.tell()/1024
-            counter+=1
-        path = image_path[:image_path.rfind('.')]+'_compressed'+image_path[image_path.rfind('.'):]
-        Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
-        Images['img'].save(path)
-        Labels['confirmation'].place(x=0,y=400)
+    w,h = Images['img'].size
+    counter = 1
+    Entries['kb'].destroy()
+    Labels['kb'].destroy()
+    Buttons['kb_confirm'].destroy()
+    while current >= target and counter <= 100:
+        buffer.truncate(0)
+        buffer.seek(0)
+        ratio = (target/current)**0.5
+        w = int(w*ratio)
+        h = int(h*ratio)
+        Images['img']= Images['img'].resize((w,h))
+        Images['img'].save(buffer,format='PNG')
+        current = buffer.tell()/1024
+        counter+=1
+    path = image_path[:image_path.rfind('.')]+'_compressed'+image_path[image_path.rfind('.'):]
+    Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
+    Images['img'].save(path)
+    Labels['confirmation'].place(x=0,y=400)
 
         
 window = Tk(className='Photo compressor')
