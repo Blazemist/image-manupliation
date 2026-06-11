@@ -2,10 +2,8 @@ from PIL import Image,ImageTk
 import io
 from tkinter import ttk,filedialog,messagebox,Tk
 
-
-image_path ,window =  None,None
-Images ,Labels ,Buttons =  {},{},{}
-Entrys ,Messageboxs = {},{}
+image_path, window = None,None
+Images ,Labels ,Buttons ,Entries , Messageboxs = {},{},{},{},{}
 def select_photo():
     global image_path
     image_path = filedialog.askopenfile(
@@ -20,10 +18,8 @@ def select_photo():
     Images['img'] = Image.open(image_path)
     Images['display']= Images['img'].resize((490,290))
     Images['display'] = ImageTk.PhotoImage(Images['display'])
-
     Labels['display_image'] = ttk.Label(window,image=Images['display'],relief='solid')
     Buttons['Proceed'] = ttk.Button(window,text='Proceed',command=type_selection)
-
     Labels['display_image'].place(x=1,y=75)
     Buttons['Proceed'].place(x=320,y=400)
     Buttons['select'].place(x=120,y=400)
@@ -32,25 +28,21 @@ def select_photo():
 def type_selection():
     Buttons['select'].destroy()
     Buttons['Proceed'].destroy()
-
     Buttons['dim'] = ttk.Button(window,text='Reduce dimension',command=red_dim)
     Buttons['kb'] = ttk.Button(window,text='Reduce kb',command=red_kb)
-
     Buttons['dim'].place(x=100,y=400)
     Buttons['kb'].place(x=300,y=400)
 
 def red_dim(): 
     Buttons['dim'].destroy()
     Buttons['kb'].destroy()
-
     Labels['height'] = ttk.Label(window,text= 'Enter Height:  ',relief='raised')
     Labels['width'] = ttk.Label(window,text= 'Enter width: ',relief='raised')
     Buttons['dim_confirm'] = ttk.Button(window,text='Confirm',command=photo_resize)
-    Entrys['height'] = ttk.Entry(window)
-    Entrys['width'] = ttk.Entry(window)
-
-    Entrys['height'].place(x=175,y=390)
-    Entrys['width'].place(x=175,y=410)
+    Entries['height'] = ttk.Entry(window)
+    Entries['width'] = ttk.Entry(window)
+    Entries['height'].place(x=175,y=390)
+    Entries['width'].place(x=175,y=410)
     Labels['height'].place(x=100,y=390)
     Labels['width'].place(x=100,y=410)
     Buttons['dim_confirm'].place(x=200,y=430)
@@ -58,22 +50,20 @@ def red_dim():
 
 def photo_resize():
     w,h = Images['img'].size
-    new_w = int(Entrys['width'].get())
-    new_h = int(Entrys['height'].get())
+    new_w = int(Entries['width'].get())
+    new_h = int(Entries['height'].get())
     if w < new_w or h < new_h:
         Messageboxs['invalid_dim'] = messagebox.showerror(
             title='Invalid Dimenstion',
             message='height and width\nmust be less\nthan images'
             )
     else:
-        Entrys['height'].destroy()
-        Entrys['width'].destroy()
+        Entries['height'].destroy()
+        Entries['width'].destroy()
         Labels['height'].destroy()
         Labels['width'].destroy()
         Buttons['dim_confirm'].destroy()
-
         path = image_path[:image_path.rfind('.')]+'_resized'+image_path[image_path.rfind('.'):]
-
         Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
         Images['resize_img'] = Images['img'].resize((new_w,new_h))
         Images['resize_img'].save(path)
@@ -82,11 +72,10 @@ def photo_resize():
 def red_kb():
     Buttons['dim'].destroy()
     Buttons['kb'].destroy()
-
     Labels['kb'] = ttk.Label(window,text= 'Enter Kb:  ',relief='raised')
-    Entrys['kb'] = ttk.Entry(window)
+    Entries['kb'] = ttk.Entry(window)
     Buttons['kb_confirm'] = ttk.Button(window,text='Confirm',command=photo_reduc)
-    Entrys['kb'].place(x=175,y=390)
+    Entries['kb'].place(x=175,y=390)
     Labels['kb'].place(x=100,y=390)
     Buttons['kb_confirm'].place(x=200,y=410)
 
@@ -94,7 +83,7 @@ def photo_reduc():
     buffer = io.BytesIO()
     Images['img'].save(buffer,format=image_path[image_path.rfind('.'):])
     current = buffer.tell()/1024
-    target = int(Entrys['kb'].get())*0.8
+    target = int(Entries['kb'].get())*0.8
     w,h = Images['img'].size
     counter = 1
     if current<target:
@@ -103,7 +92,7 @@ def photo_reduc():
             message='Size can only be reduced'
             )
     else:
-        Entrys['kb'].destroy()
+        Entries['kb'].destroy()
         Labels['kb'].destroy()
         Buttons['kb_confirm'].destroy()
         while current >= target and counter <= 100:
@@ -122,11 +111,10 @@ def photo_reduc():
         Labels['confirmation'].place(x=0,y=400)
 
         
-
 window = Tk(className='Photo compressor')
 window.geometry('500x500')
 window.resizable(False,False)
-Labels['title'] = ttk.Label(window,text='Photo compressor rawr',relief='raised')
+Labels['title'] = ttk.Label(window,text='Photo compressor & resizer',relief='raised')
 Buttons['select'] = ttk.Button(window,text='Choose image',command=select_photo)
 Buttons['quit'] = ttk.Button(window,text='quit',command=lambda : window.destroy())
 Labels['title'].place(x=175,y=50)
