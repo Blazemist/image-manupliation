@@ -87,7 +87,8 @@ def red_kb():
 
 def photo_reduc():
     buffer = io.BytesIO()
-    Images['img'].save(buffer,format=image_path[image_path.rfind('.')+1:])
+    image_format = image_path[image_path.rfind('.')+1:]
+    Images['img'].save(buffer,format=image_format)
     current = buffer.tell()/1024
     try:
         target = int(Entries['kb'].get())*0.8
@@ -98,6 +99,7 @@ def photo_reduc():
             title='Invalid Size',
             message='Size can only be reduced'
             )
+        return
     w,h = Images['img'].size
     counter = 1
     Entries['kb'].destroy()
@@ -110,10 +112,10 @@ def photo_reduc():
         w = int(w*ratio)
         h = int(h*ratio)
         Images['img']= Images['img'].resize((w,h))
-        Images['img'].save(buffer,format='PNG')
+        Images['img'].save(buffer,format=image_format)
         current = buffer.tell()/1024
         counter+=1
-    path = image_path[:image_path.rfind('.')]+'_compressed'+image_path[image_path.rfind('.'):]
+    path = image_path[:image_path.rfind('.')]+'_compressed.'+image_format
     Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
     Images['img'].save(path)
     Labels['confirmation'].place(x=0,y=400)
