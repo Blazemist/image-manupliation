@@ -13,8 +13,7 @@ def select_photo():
             ('JPG/JPEG Files', '*.jpg *.jpeg'),
             ("IMAGE Files", '*.png *.jpg *.jpeg'),
             ("ALL FIles", "*.*")
-            ]
-    ).name
+            ])
     if not file:
         return
     image_path = file.name
@@ -57,9 +56,7 @@ def photo_resize():
     new_h = int(Entries['height'].get())
     if w < new_w or h < new_h:
         Messageboxs['invalid_dim'] = messagebox.showerror(
-            title='Invalid Dimenstion',
-            message='height and width\nmust be less\nthan images'
-            )
+            title='Invalid Dimenstion',message='height and width\nmust be less\nthan images')
     else:
         Entries['height'].destroy()
         Entries['width'].destroy()
