@@ -72,7 +72,7 @@ def photo_resize():
     except ValueError:
         Messageboxs['invalid_dim'] = messagebox.showerror(
             title='Invalid Dimenstion',
-            message='height and width\nmust be integer and less\nthan images'
+            message="height and width\nmust be integer and less\nthan image's current dimension "
             )
         return
     
@@ -89,13 +89,14 @@ def red_kb():
 
 def photo_reduc():
     buffer = io.BytesIO()
-    Images['img'].save(buffer,format=image_format)
+    Images['copy'] = Images.get('img',None)
+    Images['copy'].save(buffer,format=image_format)
     current = buffer.tell()/1024
     try:
         target = int(Entries['kb'].get())*0.8
         if current<target or target <= 0:
             raise ValueError
-        w,h = Images['img'].size
+        w,h = Images['copy'].size
         counter = 1
         Entries['kb'].destroy()
         Labels['kb'].destroy()
@@ -106,13 +107,13 @@ def photo_reduc():
             ratio = (target/current)**0.5
             w = int(w*ratio)
             h = int(h*ratio)
-            Images['img']= Images['img'].resize((w,h))
-            Images['img'].save(buffer,format=image_format)
+            Images['copy'] = Images['copy'].resize((w,h))
+            Images['copy'].save(buffer,format=image_format)
             current = buffer.tell()/1024
             counter+=1
         path = image_path[:image_path.rfind('.')]+'_compressed.'+image_format
         Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
-        Images['img'].save(path,format=image_format)
+        Images['copy'].save(path,format=image_format)
         Labels['confirmation'].place(x=0,y=400)
     except ValueError:
         Messageboxs['invalid_size'] = messagebox.showerror(
