@@ -89,7 +89,7 @@ def red_kb():
 
 def photo_reduc():
     buffer = io.BytesIO()
-    Images['copy'] = Images.get('img',None)
+    Images['copy'] = Images['img'].copy()
     Images['copy'].save(buffer,format=image_format)
     current = buffer.tell()/1024
     try:
