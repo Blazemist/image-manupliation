@@ -112,7 +112,7 @@ def photo_reduc():
             counter+=1
         path = image_path[:image_path.rfind('.')]+'_compressed.'+image_format
         Labels['confirmation'] = ttk.Label(window,text=f'image saved at {path}')
-        Images['img'].save(path)
+        Images['img'].save(path,format=image_format)
         Labels['confirmation'].place(x=0,y=400)
     except ValueError:
         Messageboxs['invalid_size'] = messagebox.showerror(
