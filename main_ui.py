@@ -6,7 +6,7 @@ image_path, window = None,None
 Images ,Labels ,Buttons ,Entries , Messageboxs = {},{},{},{},{}
 def select_photo():
     global image_path
-    image_path = filedialog.askopenfile(
+    file = filedialog.askopenfile(
         title='Select your picture',
         filetypes=[
             ('PNG Files', '*.png'),
@@ -15,6 +15,9 @@ def select_photo():
             ("ALL FIles", "*.*")
             ]
     ).name
+    if not file:
+        return
+    image_path = file.name
     Images['img'] = Image.open(image_path)
     Images['display']= Images['img'].resize((490,290))
     Images['display'] = ImageTk.PhotoImage(Images['display'])
